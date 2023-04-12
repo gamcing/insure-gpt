@@ -6,7 +6,6 @@ import { CallbackManager } from 'langchain/callbacks';
 
 const CONDENSE_PROMPT =
   PromptTemplate.fromTemplate(`鉴于以下对话和追问，将追问的问题改写为一个单独的问题。
-
 对话的历史记录:
 {chat_history}
 追问: {question}
@@ -21,7 +20,7 @@ const QA_PROMPT = PromptTemplate.fromTemplate(
 =========
 {context}
 =========
-用Markdown来回答:`,
+`,
 );
 
 export const makeChain = (
@@ -41,7 +40,7 @@ export const makeChain = (
         ? CallbackManager.fromHandlers({
             async handleLLMNewToken(token) {
               onTokenStream(token);
-              console.log(token);
+              //console.log(token);
             },
           })
         : undefined,
@@ -53,7 +52,7 @@ export const makeChain = (
     vectorstore,
     combineDocumentsChain: docChain,
     questionGeneratorChain: questionGenerator,
-    returnSourceDocuments: true,
+    returnSourceDocuments: false,
     k: 2, //number of source documents to return
   });
 };
