@@ -25,8 +25,7 @@ const QA_PROMPT = PromptTemplate.fromTemplate(
 =========
 {context}
 =========
-`,
-);
+`);
 
 export const makeChain = (
   vectorstore: PineconeStore,
@@ -48,7 +47,7 @@ export const makeChain = (
               //console.log(token);
             },
           })
-        : undefined,
+        : Object(),
     }),
     { prompt: QA_PROMPT },
   );
