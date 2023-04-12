@@ -4,17 +4,17 @@ import { PineconeStore } from 'langchain/vectorstores';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
 
-// const CONDENSE_PROMPT =
-//   PromptTemplate.fromTemplate(`鉴于以下对话和追问，将追问的问题改写为一个单独的问题。
-// 对话的历史记录:
-// {chat_history}
-// 问题: {question}
-// 独立问题:`);
-
 const CONDENSE_PROMPT =
-  PromptTemplate.fromTemplate(`
+  PromptTemplate.fromTemplate(`鉴于以下对话和追问，将追问的问题改写为一个单独的问题。
+对话的历史记录:
+{chat_history}
 问题: {question}
-`);
+独立问题:`);
+
+// const CONDENSE_PROMPT =
+//   PromptTemplate.fromTemplate(`
+// 问题: {question}
+// `);
 
 const QA_PROMPT = PromptTemplate.fromTemplate(
   `您是提供员工保险理赔的AI向导。以下是保险手册的一部分相关问题的材料。根据以下提供的上下文生成答案。
@@ -58,6 +58,6 @@ export const makeChain = (
     combineDocumentsChain: docChain,
     questionGeneratorChain: questionGenerator,
     returnSourceDocuments: false,
-    k: 0, //number of source documents to return
+    k: 1, //number of source documents to return
   });
 };
