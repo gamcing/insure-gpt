@@ -3,6 +3,7 @@ import { LLMChain, ChatVectorDBQAChain, loadQAChain } from 'langchain/chains';
 import { PineconeStore } from 'langchain/vectorstores';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
+import { Configuration } from 'openai';
 
 const CONDENSE_PROMPT =
   PromptTemplate.fromTemplate(`鉴于以下对话和追问，将追问的问题改写为一个单独的问题。
@@ -32,7 +33,10 @@ export const makeChain = (
   onTokenStream?: (token: string) => void,
 ) => {
   const questionGenerator = new LLMChain({
-    llm: new OpenAIChat({ temperature: 0 }),
+    llm: new OpenAIChat({ temperature: 0 }, new Configuration({
+      basePath:process.env.OPENAI_API_BASE_URL,
+      apiKey:process.env.OPENAI_API_KEY
+    })),
     prompt: CONDENSE_PROMPT,
   });
   const docChain = loadQAChain(
@@ -42,13 +46,16 @@ export const makeChain = (
       streaming: Boolean(onTokenStream),
       callbackManager: onTokenStream
         ? CallbackManager.fromHandlers({
-            async handleLLMNewToken(token) {
-              onTokenStream(token);
-              //console.log(token);
-            },
-          })
+          async handleLLMNewToken(token) {
+            onTokenStream(token);
+            //console.log(token);
+          },
+        })
         : Object(),
-    }),
+    }, new Configuration({
+      basePath:process.env.OPENAI_API_BASE_URL,
+      apiKey:process.env.OPENAI_API_KEY
+    })),
     { prompt: QA_PROMPT },
   );
 
@@ -56,7 +63,7 @@ export const makeChain = (
     vectorstore,
     combineDocumentsChain: docChain,
     questionGeneratorChain: questionGenerator,
-    returnSourceDocuments: false,
-    k: 0, //number of source documents to return
+    returnSourceDocuments: true,
+    k: 2, //number of source documents to return
   });
 };
